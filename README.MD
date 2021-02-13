@@ -2,6 +2,7 @@
 2. [Prerequisites](#Prerequisites)
 3. [How It works](#How-It-Works)
 4. [How to set extensionAttribute3](#How-to-set-extensionAttribute3)
+5. [Download app](#Download-app)
 
 ### About
 
@@ -15,8 +16,8 @@ Simple app that sends **Happy Birthday🎉** e-mail to your users.
 
 ### How It works
 
-App will scan domain and get a list of ActiveDirectory enabled users. Then it will read `extensionAttribute3` and deserialize it into json object.
-If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would be parsed into `DateTime` object and compared with DateOfYear property. If it would match email will be sent using html template located in the path specified in `appsettings.json` **-** `MailTemplateHtml`:
+App scans domain and gets a list of ActiveDirectory enabled users. Then it reads `extensionAttribute3` and deserialize it into json object.
+If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would be parsed into `DateTime` object and compared with DateOfYear property. If it would match email will be sent by using html template located in the path specified in `appsettings.json` **-** `MailTemplateHtml`:
 
 ```
 {
@@ -33,7 +34,7 @@ If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would 
 }
 ```
 
-By default logging is enabled and will log both to the console and file. You can specify log location (optional). If not specified `logs` folder will be created in the working directory.
+Logging is enabled by default and logs both console and file. You can specify log location (optional). If not specified `logs` folder will be created in the working directory.
 
 Html template has tag `{{name}}` that would be replaced with ActiveDirectory users `DisplayName`.
 
@@ -44,3 +45,7 @@ Use ActiveDirectory powershell module and run:
 ```
 Set-ADUser userName -Add @{extensionAttribute3='{"DOB": "02/14/1985"}'}
 ```
+
+### Download app
+
+You can download compiled version for Windows x64 platform [from here](https://github.com/MTokarev/mailSender/releases/download/v1/win-x64.zip).
