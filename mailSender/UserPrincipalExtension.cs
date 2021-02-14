@@ -22,10 +22,10 @@ namespace mailSender
         {
             get
             {
-                if (ExtensionGet("extensionAttribute3").Length == 0)
-                    return string.Empty;
-
-                return ExtensionGet("extensionAttribute3")[0].ToString();
+                var ex3 = ExtensionGet("extensionAttribute3");
+                
+                // If extensionAttribute3 has a value return otherwise return empty string.
+                return ex3.Length == 0 ? string.Empty : ex3[0].ToString();
             }
             set { ExtensionSet("extensionAttribute3", value); }
         }
