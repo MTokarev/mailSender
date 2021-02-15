@@ -17,7 +17,7 @@ Simple app that sends **Happy Birthday🎉** e-mail to your users.
 ### How It works
 
 App scans domain and gets a list of ActiveDirectory enabled users. Then it reads `extensionAttribute3` and deserialize it into json object.
-If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would be parsed into `DateTime` object and compared with DateOfYear property. If it would match email will be sent by using html template located in the path specified in `appsettings.json` **-** `MailTemplateHtml`:
+If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would be parsed into `DateTime` object and compared with DayOfYear property. If it would match email will be sent by using html template located in the path specified in `appsettings.json` **-** `MailTemplateHtml`:
 
 ```
 {
@@ -28,7 +28,7 @@ If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would 
     "ApiKey": "Do not store your keys into git repos",
     "SenderEmail": "no-reply@domain",
     "SenderName": "NoReply",
-    "MailSubject": "You have a birthday!",
+    "MailSubject": "Happy Birthday {{name}}!",
     "MailTemplateHtml": "mailTempl.html"
   }
 }
@@ -36,7 +36,7 @@ If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would 
 
 Logging is enabled by default and logs both console and file. You can specify log location (optional). If not specified `logs` folder will be created in the working directory.
 
-Html template has tag `{{name}}` that would be replaced with ActiveDirectory users `DisplayName`.
+Html template and message subject have a tag `{{name}}` that would be replaced with ActiveDirectory users `DisplayName`.
 
 ### How to set extensionAttribute3
 

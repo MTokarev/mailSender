@@ -143,9 +143,9 @@ namespace mailSender
 
             foreach(var user in sendTos)
             {
-                // Replacing display name.
-                mailTemplate = mailTemplate.Replace("{{name}}", user.DisplayName);
-                mailSubject = mailSubject.Replace("{{name}}", user.DisplayName);
+                // Replacing message subject and body with user display name.
+                var compiledMailTemplate = mailTemplate.Replace("{{name}}", user.DisplayName);
+                var compiledMailSubject = mailSubject.Replace("{{name}}", user.DisplayName);
 
                 // If user has an email address.
                 if (!String.IsNullOrEmpty(user.EmailAddress))
@@ -153,9 +153,9 @@ namespace mailSender
                     var mail = new SendGridMessage
                     {
                         From = mailFrom,
-                        Subject = mailSubject,
-                        PlainTextContent = mailTemplate,
-                        HtmlContent = mailTemplate
+                        Subject = compiledMailSubject,
+                        PlainTextContent = compiledMailTemplate,
+                        HtmlContent = compiledMailTemplate
                     };
 
                     // Adding user email to the 'To' field.
