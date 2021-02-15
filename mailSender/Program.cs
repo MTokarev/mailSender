@@ -145,9 +145,10 @@ namespace mailSender
             {
                 // Replacing display name.
                 mailTemplate = mailTemplate.Replace("{{name}}", user.DisplayName);
-                
+                mailSubject = mailSubject.Replace("{{name}}", user.DisplayName);
+
                 // If user has an email address.
-                if(!String.IsNullOrEmpty(user.EmailAddress))
+                if (!String.IsNullOrEmpty(user.EmailAddress))
                 {
                     var mail = new SendGridMessage
                     {
