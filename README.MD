@@ -48,4 +48,4 @@ Set-ADUser userName -Add @{extensionAttribute3='{"DOB": "02/14/1985"}'}
 
 ### Download app
 
-You can download compiled version for Windows x64 platform [from here](https://github.com/MTokarev/mailSender/releases/download/v1/win-x64.zip).
+You can download compiled version for Windows x64 platform [from here](https://github.com/MTokarev/mailSender/releases/download/v1.0.1/win-x64.zip).
