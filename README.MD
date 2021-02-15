@@ -29,10 +29,13 @@ If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would 
     "SenderEmail": "no-reply@domain",
     "SenderName": "NoReply",
     "MailSubject": "Happy Birthday {{name}}!",
-    "MailTemplateHtml": "mailTempl.html"
+    "MailTemplateHtml": "mailTempl.html",
+    "SimulationModeEnabled": false
   }
 }
 ```
+
+You can use `SimulationModeEnabled` setting to just log events but not send.
 
 Logging is enabled by default and logs both console and file. You can specify log location (optional). If not specified `logs` folder will be created in the working directory.
 
@@ -48,4 +51,4 @@ Set-ADUser userName -Add @{extensionAttribute3='{"DOB": "02/14/1985"}'}
 
 ### Download app
 
-You can download compiled version for Windows x64 platform [from here](https://github.com/MTokarev/mailSender/releases/download/v1.0.1/win-x64.zip).
+You can download compiled version for Windows x64 platform [from here](https://github.com/MTokarev/mailSender/releases/download/v1.0.2/win-x64.zip).

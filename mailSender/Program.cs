@@ -126,6 +126,7 @@ namespace mailSender
             var mailFrom = new EmailAddress(_config.GetSection("SendGrid:SenderEmail").Value,
                 _config.GetSection("SendGrid:SenderName").Value);
             string mailSubject = _config.GetSection("SendGrid:MailSubject").Value;
+            bool SimulationModeEnabled = bool.Parse(_config.GetSection("SendGrid:SimulationModeEnabled").Value);
             var client = new SendGridClient(_config.GetSection("SendGrid:ApiKey").Value);
             string mailTemplate;
 
@@ -160,6 +161,13 @@ namespace mailSender
 
                     // Adding user email to the 'To' field.
                     mail.AddTo(user.EmailAddress);
+
+                    // If simulation mode is enabled just log message and continue.
+                    if(SimulationModeEnabled)
+                    {
+                        _logger.Information($"Simulation mode is ON, e-mail won't sent to '{user.EmailAddress}'. You can turn it off in appsettings.json");
+                        continue;
+                    }
 
                     var result = client.SendEmailAsync(mail);
 
