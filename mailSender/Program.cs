@@ -10,6 +10,7 @@ using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace mailSender
 {
@@ -34,8 +35,9 @@ namespace mailSender
             var enabledUsers = GetEnabledDomainUsers(domainName: Environment.UserDomainName);
             var celebratingUser = GetCelebratingUsers(enabledUsers);
 
-            // Send celebration message
-            ExecuteMailSender(celebratingUser);
+            // Send celebration message and waiting when task done.
+            var task = ExecuteMailSenderAsync(celebratingUser);
+            task.Wait();
 
             // Stop timer and log time
             stopWatch.Stop();
@@ -120,15 +122,17 @@ namespace mailSender
             
             return _logger;
         }
-        private static void ExecuteMailSender(List<UserPrincipalExtension> sendTos)
+        private static async Task ExecuteMailSenderAsync(List<UserPrincipalExtension> sendTos)
         {
+            // List of task per user in list.
+            List<Task> listOfTasks = new List<Task>();
+
             // Reading configuration from appsettings.json
             var mailFrom = new EmailAddress(_config.GetSection("SendGrid:SenderEmail").Value,
                 _config.GetSection("SendGrid:SenderName").Value);
             string mailSubject = _config.GetSection("SendGrid:MailSubject").Value;
             string ccRecipient = _config.GetSection("SendGrid:CcRecipient").Value;
             bool SimulationModeEnabled = bool.Parse(_config.GetSection("SendGrid:SimulationModeEnabled").Value);
-            var client = new SendGridClient(_config.GetSection("SendGrid:ApiKey").Value);
             string mailTemplate;
 
             try
@@ -181,25 +185,32 @@ namespace mailSender
                         continue;
                     }
 
-                    var result = client.SendEmailAsync(mail);
-
-                    // Logging results
-                    if ( result.Result.StatusCode != HttpStatusCode.Accepted)
-                    {
-                        _logger.Error($"Unable send email to: '{user.EmailAddress}'. Status code '{result.Result.StatusCode}'.");
-                    }
-                    else if (result.Result.StatusCode == HttpStatusCode.Accepted)
-                    {
-                        _logger.Information($"Mail has been sent to: '{user.EmailAddress}'.");
-                    }
+                    // Adding task to the list.
+                    listOfTasks.Add(SendBrthAsync(mail, user));
                 }
                 else
                 {
                     _logger.Warning($"User '{user.UserPrincipalName}' does not have a valid email. Email: '{user.EmailAddress}'.");
                 }            
             }
-           
-            return;
+            // Wainting when all tasks done.
+            await Task.WhenAll(listOfTasks);
+        }
+
+        private static async Task SendBrthAsync(SendGridMessage mail, UserPrincipalExtension user)
+        {
+            var client = new SendGridClient(_config.GetSection("SendGrid:ApiKey").Value);
+            var result = await client.SendEmailAsync(mail);
+
+            // Logging results
+            if (result.StatusCode != HttpStatusCode.Accepted)
+            {
+                _logger.Error($"Unable send email to: '{user.EmailAddress}'. Status code '{result.StatusCode}'.");
+            }
+            else if (result.StatusCode == HttpStatusCode.Accepted)
+            {
+                _logger.Information($"Mail has been sent to: '{user.EmailAddress}'.");
+            }
         }
     }
 }
