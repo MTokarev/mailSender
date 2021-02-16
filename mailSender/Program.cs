@@ -35,8 +35,8 @@ namespace mailSender
             var enabledUsers = GetEnabledDomainUsers(domainName: Environment.UserDomainName);
             var celebratingUser = GetCelebratingUsers(enabledUsers);
 
-            // Send celebration message and waiting when task done.
-            var task = ExecuteMailSenderAsync(celebratingUser);
+            // Send celebration message and waiting when task is done.
+            var task = GenerateEmailsAsync(celebratingUser);
             task.Wait();
 
             // Stop timer and log time
@@ -122,7 +122,7 @@ namespace mailSender
             
             return _logger;
         }
-        private static async Task ExecuteMailSenderAsync(List<UserPrincipalExtension> sendTos)
+        private static async Task GenerateEmailsAsync(List<UserPrincipalExtension> sendTos)
         {
             // List of task per user in list.
             List<Task> listOfTasks = new List<Task>();
@@ -193,12 +193,13 @@ namespace mailSender
                     _logger.Warning($"User '{user.UserPrincipalName}' does not have a valid email. Email: '{user.EmailAddress}'.");
                 }            
             }
-            // Wainting when all tasks done.
+            // Wainting when all tasks are done.
             await Task.WhenAll(listOfTasks);
         }
 
         private static async Task SendBrthAsync(SendGridMessage mail, UserPrincipalExtension user)
         {
+            // Creating client and sending messages.
             var client = new SendGridClient(_config.GetSection("SendGrid:ApiKey").Value);
             var result = await client.SendEmailAsync(mail);
 
