@@ -126,6 +126,7 @@ namespace mailSender
             var mailFrom = new EmailAddress(_config.GetSection("SendGrid:SenderEmail").Value,
                 _config.GetSection("SendGrid:SenderName").Value);
             string mailSubject = _config.GetSection("SendGrid:MailSubject").Value;
+            string ccRecipient = _config.GetSection("SendGrid:CcRecipient").Value;
             bool SimulationModeEnabled = bool.Parse(_config.GetSection("SendGrid:SimulationModeEnabled").Value);
             var client = new SendGridClient(_config.GetSection("SendGrid:ApiKey").Value);
             string mailTemplate;
@@ -140,6 +141,11 @@ namespace mailSender
                 _logger.Error($"Unable to read mail template file: '{_config.GetSection("SendGrid:MailTemplateHtml").Value}'. Exception: '{e.Message}'.");
                 
                 return;
+            }
+
+            if(SimulationModeEnabled)
+            {
+                _logger.Information("--- Simulation mode turned ON. No email will be sent to the users. You can turn it off in appsettings.json");
             }
 
             foreach(var user in sendTos)
@@ -162,10 +168,16 @@ namespace mailSender
                     // Adding user email to the 'To' field.
                     mail.AddTo(user.EmailAddress);
 
+                    // If we have recipient to add to CC.
+                    if (!string.IsNullOrEmpty(ccRecipient))
+                    {
+                        mail.AddCc(ccRecipient);
+                    }
+
                     // If simulation mode is enabled just log message and continue.
                     if(SimulationModeEnabled)
                     {
-                        _logger.Information($"Simulation mode is ON, e-mail won't sent to '{user.EmailAddress}'. You can turn it off in appsettings.json");
+                        _logger.Information($"E-mail won't sent to '{user.EmailAddress}'.");
                         continue;
                     }
 

@@ -30,7 +30,7 @@ If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would 
     "SenderName": "NoReply",
     "MailSubject": "Happy Birthday {{name}}!",
     "MailTemplateHtml": "mailTempl.html",
-    "SimulationModeEnabled": false
+    "SimulationModeEnabled": true
   }
 }
 ```
