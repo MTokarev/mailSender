@@ -8,6 +8,8 @@
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UserSecretsId>f8fad4a5-3942-435f-bec7-b234a053a912</UserSecretsId>
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
