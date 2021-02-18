@@ -29,7 +29,7 @@ If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would 
     "ApiKey": "Do not store your keys into git repos",
     "SenderEmail": "no-reply@domain",
     "SenderName": "NoReply",
-    "MailSubject": "You have a birthday!",
+    "MailSubject": "Happy Birthday {{name}}!",
     "MailTemplateHtml": "mailTempl.html",
 
     //Optional (can be removed).
@@ -43,7 +43,7 @@ You can use `SimulationModeEnabled` setting to just log events but not send.
 
 Logging is enabled by default and logs both console and file. You can specify log location (optional). If not specified `logs` folder will be created in the working directory.
 
-Html template and message subject have a tag `{{name}}` that would be replaced with ActiveDirectory users `DisplayName`.
+Html template and message subject might have a tag `{{name}}` that would be replaced with ActiveDirectory users `DisplayName`.
 
 ### How to set extensionAttribute3
 
