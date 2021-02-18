@@ -22,14 +22,18 @@ If `extensionAttribute3` has **"DOB"** key in format "mm/dd/yyyy" then it would 
 ```
 {
   "Logger": {
+    //Optional (can be removed).
     "LogPath": "logs/log.log"
   },
   "SendGrid": {
     "ApiKey": "Do not store your keys into git repos",
     "SenderEmail": "no-reply@domain",
     "SenderName": "NoReply",
-    "MailSubject": "Happy Birthday {{name}}!",
+    "MailSubject": "You have a birthday!",
     "MailTemplateHtml": "mailTempl.html",
+
+    //Optional (can be removed).
+    "CcRecipient": "addToCc@domain",
     "SimulationModeEnabled": true
   }
 }
