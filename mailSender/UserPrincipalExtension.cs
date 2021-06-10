@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
 using System.Text;
+using System.Text.Json;
 
 namespace mailSender
 {
@@ -27,7 +28,6 @@ namespace mailSender
                 // If extensionAttribute3 has a value return otherwise return empty string.
                 return ex3.Length == 0 ? string.Empty : ex3[0].ToString();
             }
-            set { ExtensionSet("extensionAttribute3", value); }
         }
     }
 }

@@ -87,7 +87,7 @@ namespace mailSender
                     if(ex3.Dob != DateTime.MinValue)
                     {
                         // Add user to the list if he has a birthday today.
-                        if(ex3.Dob.DayOfYear == DateTime.Now.DayOfYear)
+                        if(HasBirthday(ex3.Dob))
                         {
                             celebratingUsers.Add(user);
                         }
@@ -212,6 +212,15 @@ namespace mailSender
             {
                 _logger.Information($"Mail has been sent to: '{user.EmailAddress}'.");
             }
+        }
+        // Handling leap year cases
+        // If user was born in a leap year and now it is not a leap one then 'DayOfYear' will be incosistent
+        private static bool HasBirthday(DateTime userDob)
+        {
+            string DobNormalizedStr = $"{userDob.Month}/{userDob.Day}/{DateTime.Now.Year}";
+            return DateTime.TryParse(DobNormalizedStr, out var DobNormalized) ?
+                DobNormalized.DayOfYear == DateTime.Now.DayOfYear :
+                false;
         }
     }
 }
