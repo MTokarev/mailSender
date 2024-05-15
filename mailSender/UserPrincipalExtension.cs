@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.DirectoryServices.AccountManagement;
-using System.Text;
-using System.Text.Json;
+﻿using System.DirectoryServices.AccountManagement;
 
 namespace mailSender
 {
     [DirectoryRdnPrefix("CN")]
     [DirectoryObjectClass("Person")]
-    class UserPrincipalExtension : UserPrincipal
+    public class UserPrincipalExtension : UserPrincipal
     {
         public UserPrincipalExtension(PrincipalContext context) : base(context)
         {

@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace mailSender
@@ -15,8 +14,17 @@ namespace mailSender
         {
             get
             {
-                DateTime.TryParse(DobStr, out var value);
-                return value;
+                // We expect to have string in the specific format 'dd/MM/yyyy'
+                if (DateTime.TryParseExact(DobStr,
+                    "dd/MM/yyyy",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var value))
+                {
+                    return value;
+                }
+
+                return DateTime.MinValue;
             }
             set
             {
