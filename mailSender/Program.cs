@@ -47,7 +47,6 @@ namespace mailSender
 
             var config = builder.Build();
             return config;
-
         }
 
         private static Logger InitLogger(IConfigurationRoot config)

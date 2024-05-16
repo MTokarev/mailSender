@@ -11,7 +11,7 @@ namespace mailSender
         private readonly Logger _logger;
 
         public UserService(Logger logger)
-		{
+	    {
             _logger = logger;
         }
 
