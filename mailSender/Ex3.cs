@@ -8,23 +8,34 @@ namespace mailSender
     {
         [JsonPropertyName("DOB")]
         public string DobStr { get; set; }
+        
+        private DateTime _dob;
+        private bool _isDobFormatted = false;
 
         [JsonIgnore]
         public DateTime Dob
         {
             get
             {
-                // We expect to have string in the specific format 'dd/MM/yyyy'
+                // If we already tried to parse the date, then return cached result
+                if (_isDobFormatted)
+                {
+                    return _dob;
+                }
+
+                // We expect to have string in the specific format 'M/d/yyyy'
+                // e.g. '2/3/1990', '11/12/1985'
                 if (DateTime.TryParseExact(DobStr,
-                    "dd/MM/yyyy",
+                    "M/d/yyyy",
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.None,
                     out var value))
                 {
-                    return value;
+                    _dob = value;
                 }
 
-                return DateTime.MinValue;
+                _isDobFormatted = true;
+                return _dob;
             }
             set
             {

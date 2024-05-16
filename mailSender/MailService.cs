@@ -18,14 +18,15 @@ namespace mailSender
         private readonly EmailAddress _mailFrom;
         private readonly bool _isSimulationModeEnabled;
         private readonly string _mailSubject,
+            _mailTemplateFile,
             _ccRecipient;
 
         public MailService(IConfiguration config, Logger logger)
 		{
-            ValidateAndAssignConfig(config);
-
-            _config = config;
             _logger = logger;
+            
+            ValidateAndAssignConfig(config);
+            _config = config;
 
             _mailFrom = new EmailAddress(_config.GetSection("SendGrid:SenderEmail").Value,
                 _config.GetSection("SendGrid:SenderName").Value);
@@ -33,17 +34,17 @@ namespace mailSender
                 _config.GetSection("SendGrid:SimulationModeEnabled").Value);
             _mailSubject = _config.GetSection("SendGrid:MailSubject").Value;
             _ccRecipient = _config.GetSection("SendGrid:CcRecipient").Value;
+            _mailTemplateFile = _config.GetSection("SendGrid:MailTemplateHtml").Value;
 
         }
 
         public async Task SendBrthEmailsAsync(List<UserPrincipalExtension> sendTos)
         {
             string mailTemplate;
-
             try
             {
                 // Read file from mail template.
-                mailTemplate = File.ReadAllText(_config.GetSection("SendGrid:MailTemplateHtml").Value);
+                mailTemplate = File.ReadAllText(_mailTemplateFile);
             }
             catch (Exception e)
             {
@@ -80,7 +81,7 @@ namespace mailSender
                 // If simulation mode is enabled just log message and continue.
                 if (_isSimulationModeEnabled)
                 {
-                    _logger.Information($"E-mail won't sent to '{user.EmailAddress}'.");
+                    _logger.Information($"E-mail won't be sent to '{user.EmailAddress}'.");
                     continue;
                 }
 
@@ -120,34 +121,59 @@ namespace mailSender
 
         private void ValidateAndAssignConfig(IConfiguration config)
         {
-            string sender = _config.GetSection("SendGrid:SenderEmail").Value;
-            if (string.IsNullOrEmpty(_config.GetSection("SendGrid:SenderName").Value)
+            if (config is null)
+            {
+                throw new ArgumentNullException($"'{nameof(config)}' is null. Please provide a valid configuration.");
+            }
+
+            bool isValid = true;
+            string sender = config.GetSection("SendGrid:SenderEmail").Value;
+            if (string.IsNullOrEmpty(config.GetSection("SendGrid:SenderName").Value)
                 && string.IsNullOrEmpty(sender))
             {
                 _logger.Fatal("Please provide 'SenderEmail' and 'SenderName' in appSettings.json");
+                isValid = false;
             }
 
             if (!string.IsNullOrEmpty(sender) && !MailAddress.TryCreate(sender, out var _))
             {
                 _logger.Fatal("'SenderEmail' must be a valid email address. Value provided: '{Sender}'.",
                     sender);
+                isValid = false;
             }
 
-            if (bool.TryParse(_config.GetSection("SendGrid:SimulationModeEnabled").Value, out bool _))
+            if (!bool.TryParse(config.GetSection("SendGrid:SimulationModeEnabled").Value, out bool _))
             {
                 _logger.Fatal("'SimulationModeEnabled' must to be set in appsetting.json as 'true' or 'false'.");
+                isValid = false;
             }
 
-            string ccRecipient = _config.GetSection("SendGrid:CcRecipient").Value;
-            if (!MailAddress.TryCreate(sender, out var _)
-                && !string.IsNullOrEmpty(ccRecipient))
+            string ccRecipient = config.GetSection("SendGrid:CcRecipient").Value;
+            if (!string.IsNullOrEmpty(ccRecipient)
+                && !MailAddress.TryCreate(ccRecipient, out var _))
             {
                 _logger.Fatal("'CcResipient' must be empty or have a valid email address. Value provided: '{CcRecipient}'.",
                     ccRecipient);
+                isValid = false;
             }
 
-            throw new ArgumentException($"One or more parameter provided for '{nameof(MailService)}' are incorrect. " +
-                "Please check the log for more information");
+            string templateFileName = config.GetSection("SendGrid:MailTemplateHtml").Value;
+            if (string.IsNullOrEmpty(templateFileName))
+            {
+                _logger.Fatal("Please provide a 'MailTemplateHtml' parameter in appsetting.json");
+                isValid = false;
+            }
+            else if (!File.Exists(templateFileName))
+            {
+               _logger.Fatal("Template file {FileName} does not exist.", templateFileName);
+               isValid = false;
+            }
+
+            if (!isValid)
+            {
+                throw new ArgumentException($"One or more parameter provided for '{nameof(MailService)}' are incorrect. " +
+                    "Please check the log for more details.");
+            }
         }
     }
 }

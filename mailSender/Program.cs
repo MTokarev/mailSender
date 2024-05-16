@@ -24,13 +24,14 @@ namespace mailSender
             _logger = InitLogger(_config);
             _logger.Information($"Starting '{nameof(mailSender)}'.");
 
-            // Find all active users who celebrate birthday today
+            var mailService = new MailService(_config, _logger);
             var userService = new UserService(_logger);
+
+            // Find all active users who celebrate birthday today
             var enabledUsers = userService.GetEnabledDomainUsers(domainName: Environment.UserDomainName);
             var celebratingUser = userService.GetCelebratingUsers(enabledUsers);
 
             // Send celebration message and waiting when task is done.
-            var mailService = new MailService(_config, _logger);
             await mailService.SendBrthEmailsAsync(celebratingUser);
 
             // Stop timer and log time

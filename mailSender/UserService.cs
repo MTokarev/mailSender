@@ -23,6 +23,11 @@ namespace mailSender
             using (var ctx = new PrincipalContext(ContextType.Domain, domainName))
             {
                 var userPrinciple = new UserPrincipalExtension(ctx);
+                if (hasEmail)
+                {
+                    userPrinciple.EmailAddress = "*";
+                }
+
                 using var search = new PrincipalSearcher(userPrinciple);
 
                 // Filter only active users
