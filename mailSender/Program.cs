@@ -34,7 +34,7 @@ namespace mailSender
             // Send celebration message and waiting when task is done.
             await mailService.SendBrthEmailsAsync(celebratingUser);
 
-            // Stop timer and log time
+            // Stop timer and log execution time
             stopWatch.Stop();
             _logger.Information("Exectution '{AppName}' has been finished. Running time: '{TotalSeconds}s'.",
                 nameof(mailSender),
