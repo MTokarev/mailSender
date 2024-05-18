@@ -17,7 +17,7 @@ namespace mailSender
 
         public IEnumerable<UserPrincipalExtension> GetEnabledDomainUsers(string domainName, bool hasEmail = true)
         {
-            _logger.Information($"Fetching users from the domain: '{domainName}'.");
+            _logger.Information("Fetching users from the domain: '{DomainName}'.", domainName);
             int totalAdUsers = 0;
 
             using (var ctx = new PrincipalContext(ContextType.Domain, domainName))
