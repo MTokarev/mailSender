@@ -12,7 +12,7 @@ namespace mailSender
 
         public UserService(Logger logger)
 	    {
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public IEnumerable<UserPrincipalExtension> GetMailEnabledActiveUsers(string domainName)

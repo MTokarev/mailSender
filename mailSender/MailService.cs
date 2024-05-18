@@ -23,10 +23,10 @@ namespace mailSender
 
         public MailService(IConfiguration config, Logger logger)
 		{
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _config = config ?? throw new ArgumentNullException(nameof(config)); ;
             
             ValidateAndAssignConfig(config);
-            _config = config;
 
             _mailFrom = new EmailAddress(_config.GetSection("SendGrid:SenderEmail").Value,
                 _config.GetSection("SendGrid:SenderName").Value);
@@ -137,11 +137,6 @@ namespace mailSender
 
         private void ValidateAndAssignConfig(IConfiguration config)
         {
-            if (config is null)
-            {
-                throw new ArgumentNullException($"'{nameof(config)}' is null. Please provide a valid configuration.");
-            }
-
             bool isValid = true;
             string sender = config.GetSection("SendGrid:SenderEmail").Value;
             if (string.IsNullOrEmpty(config.GetSection("SendGrid:SenderName").Value)
