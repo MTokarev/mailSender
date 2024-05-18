@@ -31,7 +31,7 @@ namespace mailSender
             var enabledUsers = userService.GetEnabledDomainUsers(domainName: Environment.UserDomainName);
             var celebratingUser = userService.GetCelebratingUsers(enabledUsers);
 
-            // Send celebration message and waiting when task is done.
+            // Send a postcard
             await mailService.SendBrthEmailsAsync(celebratingUser);
 
             // Stop timer and log execution time
