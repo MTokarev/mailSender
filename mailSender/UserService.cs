@@ -15,7 +15,7 @@ namespace mailSender
             _logger = logger;
         }
 
-        public IEnumerable<UserPrincipalExtension> GetEnabledDomainUsers(string domainName, bool hasEmail = true)
+        public IEnumerable<UserPrincipalExtension> GetMailEnabledActiveUsers(string domainName)
         {
             _logger.Information("Fetching users from the domain: '{DomainName}'.", domainName);
             int totalAdUsers = 0;
@@ -23,10 +23,9 @@ namespace mailSender
             using (var ctx = new PrincipalContext(ContextType.Domain, domainName))
             {
                 var userPrinciple = new UserPrincipalExtension(ctx);
-                if (hasEmail)
-                {
-                    userPrinciple.EmailAddress = "*";
-                }
+                
+                // Fetch users with email attribute
+                userPrinciple.EmailAddress = "*";
 
                 using var search = new PrincipalSearcher(userPrinciple);
 
@@ -36,11 +35,8 @@ namespace mailSender
 
                 foreach (var domainUser in search.FindAll())
                 {
-                    if (domainUser.DisplayName != null && hasEmail)
-                    {
-                        totalAdUsers++;
-                        yield return (UserPrincipalExtension)domainUser;
-                    }
+                    totalAdUsers++;
+                    yield return (UserPrincipalExtension)domainUser;
                 }
             }
 

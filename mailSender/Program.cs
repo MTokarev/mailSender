@@ -28,7 +28,7 @@ namespace mailSender
             var userService = new UserService(_logger);
 
             // Find all active users who celebrate birthday today
-            var enabledUsers = userService.GetEnabledDomainUsers(domainName: Environment.UserDomainName);
+            var enabledUsers = userService.GetMailEnabledActiveUsers(domainName: Environment.UserDomainName);
             var celebratingUser = userService.GetCelebratingUsers(enabledUsers);
 
             // Send a postcard

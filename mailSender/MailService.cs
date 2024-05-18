@@ -101,13 +101,28 @@ namespace mailSender
             }
         }
 
-        private static SendGridMessage CreateMail(EmailAddress mailFrom,
+        private SendGridMessage CreateMail(EmailAddress mailFrom,
             string mailSubject,
             string mailTemplate,
             UserPrincipalExtension user)
         {
-            var compiledMailTemplate = mailTemplate.Replace("{{name}}", user.DisplayName);
-            var compiledMailSubject = mailSubject.Replace("{{name}}", user.DisplayName);
+            // Some users could have disaplay name empty or null
+            // SamAccount will always exist
+            string name;
+            if (string.IsNullOrEmpty(user.DisplayName))
+            {
+                _logger.Warning("Skipping user with samAccountName {SamAccountName} because {Attribute name} is null or empty.",
+                    user.SamAccountName,
+                    nameof(user.DisplayName));
+                name = user.SamAccountName;
+            }
+            else
+            {
+                name = user.DisplayName;
+            }
+
+            var compiledMailTemplate = mailTemplate.Replace("{{name}}", name);
+            var compiledMailSubject = mailSubject.Replace("{{name}}", name);
 
             var mail = new SendGridMessage
             {
@@ -116,6 +131,7 @@ namespace mailSender
                 PlainTextContent = compiledMailTemplate,
                 HtmlContent = compiledMailTemplate
             };
+
             return mail;
         }
 
