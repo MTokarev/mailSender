@@ -38,7 +38,7 @@ namespace mailSender
 
         }
 
-        public async Task SendBrthEmailsAsync(List<UserPrincipalExtension> sendTos)
+        public async Task SendBrthEmailsAsync(IEnumerable<UserPrincipalExtension> sendTos)
         {
             string mailTemplate;
             try

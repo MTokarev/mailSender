@@ -22,7 +22,7 @@ namespace mailSender
             // Load config and init logs.
             _config = LoadConfiguration("appsettings.json");
             _logger = InitLogger(_config);
-            _logger.Information($"Starting '{nameof(mailSender)}'.");
+            _logger.Information("Starting '{AppName}'.", nameof(mailSender));
 
             var mailService = new MailService(_config, _logger);
             var userService = new UserService(_logger);
@@ -36,7 +36,9 @@ namespace mailSender
 
             // Stop timer and log time
             stopWatch.Stop();
-            _logger.Information($"Exectution '{nameof(mailSender)}' has been finished. Running time: '{stopWatch.Elapsed.TotalSeconds}s'.");
+            _logger.Information("Exectution '{AppName}' has been finished. Running time: '{TotalSeconds}s'.",
+                nameof(mailSender),
+                stopWatch.Elapsed.TotalSeconds);
         }
 
         private static IConfigurationRoot LoadConfiguration(string configJsonFile)

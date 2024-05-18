@@ -15,11 +15,11 @@ namespace mailSender
             _logger = logger;
         }
 
-        public List<UserPrincipalExtension> GetEnabledDomainUsers(string domainName, bool hasEmail = true)
+        public IEnumerable<UserPrincipalExtension> GetEnabledDomainUsers(string domainName, bool hasEmail = true)
         {
             _logger.Information($"Fetching users from the domain: '{domainName}'.");
+            int totalAdUsers = 0;
 
-            var myDomainUsers = new List<UserPrincipalExtension>();
             using (var ctx = new PrincipalContext(ContextType.Domain, domainName))
             {
                 var userPrinciple = new UserPrincipalExtension(ctx);
@@ -38,21 +38,21 @@ namespace mailSender
                 {
                     if (domainUser.DisplayName != null && hasEmail)
                     {
-                        myDomainUsers.Add((UserPrincipalExtension)domainUser);
+                        totalAdUsers++;
+                        yield return (UserPrincipalExtension)domainUser;
                     }
                 }
             }
 
-            _logger.Information($"User scan has finished. Users found: '{myDomainUsers.Count}'.");
-
-            return myDomainUsers;
+            _logger.Information("User scan has beenfinished. Total users found: {TotalAdUsers}",
+                totalAdUsers);
+            yield break;
         }
 
-        public List<UserPrincipalExtension> GetCelebratingUsers(List<UserPrincipalExtension> allUsers)
+        public IEnumerable<UserPrincipalExtension> GetCelebratingUsers(IEnumerable<UserPrincipalExtension> allUsers)
         {
             _logger.Information("Filtering users whose birthday is equal today");
-
-            var celebratingUsers = new List<UserPrincipalExtension>();
+            int usersFound = 0;
 
             foreach (var user in allUsers)
             {
@@ -68,15 +68,15 @@ namespace mailSender
                         // Comparing day and month would respect leap years.
                         if (ex3.Dob.Month == DateTime.Now.Month && ex3.Dob.Day == DateTime.Now.Day)
                         {
-                            celebratingUsers.Add(user);
+                            usersFound++;
+                            yield return user;
                         }
                     }
                 }
             }
 
-            _logger.Information($"Users celebrating birthday today: '{celebratingUsers.Count}'.");
-
-            return celebratingUsers;
+            _logger.Information("Users celebrating birthday today: {UsersCount}.", usersFound);
+            yield break;
         }
     }
 }
